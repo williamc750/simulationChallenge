@@ -23,6 +23,8 @@ execute:
 
 ### What is the expected value of your account balance after 1 coin flip?
 
+### The expected value after 1 coin flip is $1050. Using the expected value formula, we can calculate the expected value of the account balance after 1 coin flip. The math is as follows: .5*1500 + .5*600 = $1050.
+
 ```{r}
 # Set up parameters
 initial_balance <- 1000
@@ -50,6 +52,8 @@ cat("Expected Value = $", expected_value, "\n")
 
 ### Question 2: Expectation vs Reality
 
+###The expected value is positive and we expect the value to be worth more than the original $1000.
+
 ```{r}
 # Is the expected value positive or negative?
 is_positive <- expected_value > initial_balance
@@ -66,4 +70,110 @@ cat("Difference from initial: $", round(expected_value - initial_balance, 2), "\
 expected_return_pct <- ((expected_value - initial_balance) / initial_balance) * 100
 cat("Expected return: ", round(expected_return_pct, 1), "%\n")
 ```
+
+## Question 3: Single Simulation - Account Balance Over Time
+
+### Run one simulation showing the dynamics of your account balance over time
+
+```{r}
+# Load required libraries
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(ggplot2))
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Parameters for single simulation
+initial_balance <- 1000
+n_years <- 30  # Age 25 to 55
+current_age <- 25
+
+# Function to simulate one complete path
+simulate_single_path <- function(initial, years) {
+  balance <- initial
+  age <- current_age
+  path_data <- tibble(
+    year = 0:years,
+    age = (current_age):(current_age + years),
+    balance = c(initial, rep(NA, years))
+  )
+  
+  for (i in 1:years) {
+    coin_flip <- rbinom(1, 1, 0.5)
+    if (coin_flip == 1) {
+      balance <- balance * 1.5  # +50% if heads
+    } else {
+      balance <- balance * 0.6  # -40% if tails
+    }
+    path_data$balance[i + 1] <- balance
+  }
+  
+  return(path_data)
+}
+
+# Run single simulation
+single_simulation <- simulate_single_path(initial_balance, n_years)
+
+# Display the data
+cat("=== SINGLE SIMULATION RESULTS ===\n")
+print(single_simulation)
+
+# Calculate key statistics
+final_balance <- single_simulation$balance[n_years + 1]
+total_return <- ((final_balance - initial_balance) / initial_balance) * 100
+max_balance <- max(single_simulation$balance)
+min_balance <- min(single_simulation$balance)
+
+cat("\nKey Statistics:\n")
+cat("Final balance at age 55: $", round(final_balance, 2), "\n")
+cat("Total return: ", round(total_return, 1), "%\n")
+cat("Maximum balance reached: $", round(max_balance, 2), "\n")
+cat("Minimum balance reached: $", round(min_balance, 2), "\n")
+```
+
+### Visualization: Account Balance Over Time
+
+```{r}
+# Create the time series plot
+ggplot(single_simulation, aes(x = age, y = balance)) +
+  geom_line(color = "steelblue", linewidth = 1.2) +
+  geom_point(color = "darkblue", size = 2) +
+  geom_hline(yintercept = initial_balance, color = "red", linetype = "dashed", linewidth = 1) +
+  geom_hline(yintercept = 10000, color = "green", linetype = "dashed", linewidth = 1) +
+  labs(
+    title = "Account Balance Over Time - Single Simulation",
+    subtitle = paste("From age", current_age, "to", current_age + n_years, 
+                    "| Final balance: $", round(final_balance, 2)),
+    x = "Age",
+    y = "Account Balance ($)",
+    caption = "Red line: Initial balance ($1,000) | Green line: $10,000 threshold"
+  ) +
+  scale_y_continuous(
+    labels = scales::dollar_format(),
+    breaks = seq(0, max(single_simulation$balance) * 1.1, by = 2000)
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  ) +
+  annotate("text", 
+           x = current_age + 5, 
+           y = max(single_simulation$balance) * 0.9,
+           label = paste("Final: $", round(final_balance, 0)),
+           color = "darkblue",
+           fontface = "bold")
+```
+
+### Analysis and Commentary
+
+*[I am happy with the final outcome because :*
+- *Are you happy with the final outcome?*
+- *What patterns do you notice in the balance over time?*
+- *How does this compare to your expectations?*
+- *What does this tell you about the investment strategy?*
+- *Any surprises or insights from this single simulation?]*
+
 
