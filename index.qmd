@@ -462,5 +462,5 @@ cat("Modified strategy is", ifelse(modified_prob_above_10k > prob_above_10k, "HI
 
 ### Analysis and Commentary
 
-*Based on the 100 simulations for the modified game strategy, there is a 5% chance the account balance will be greater than $10,000. This probability is much lower than the probability than the original game. This is because of the original game's all in strategy, leading to a much more volatile and risky end result. Comparing the two column charts of the modified and orginal game strategy, you can immediately see the modified game strategy has a much more balanced distribution of final balances. *
+*Based on the 100 simulations for the modified game strategy, there is a 0% chance the account balance will be greater than $10,000. On the other hand the original game strategy had a 4% chance of the ending balance being greater than $10,000. This is because of the original game's all in strategy, leading to a much more volatile and risky end result. Comparing the two column charts of the modified and orginal game strategy, you can immediately see the modified game strategy has a much more balanced distribution of final balances. *
 
