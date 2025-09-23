@@ -4,7 +4,7 @@ subtitle: "Generative Models and Monte Carlo Simulation"
 format:
   html: default
 execute:
-  echo: true
+  echo: false
   eval: true
 ---
 
@@ -365,103 +365,37 @@ cat("Probability > $10,000: ", round(modified_prob_above_10k, 3), "\n")
 cat("Probability > $100,000: ", round(modified_prob_above_100k, 3), "\n")
 ```
 
-### Visualization: Modified Strategy Distribution (Object-Oriented)
+### Visualization: Modified Strategy Distribution
 
-```{python}
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from matplotlib.patches import Rectangle
-import seaborn as sns
-
-# Set style
-plt.style.use('seaborn-v0_8')
-sns.set_palette("husl")
-
-# Create figure and axis objects
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-
-# Modified strategy data (you'll need to run the R code first to get this data)
-# For demonstration, I'll create sample data that matches the expected distribution
-np.random.seed(123)
-# This would be replaced with actual modified_final_balances from R
-modified_balances = np.random.lognormal(mean=2, sigma=1.5, size=100)
-
-# Plot 1: Histogram with object-oriented approach
-n, bins, patches = ax1.hist(modified_balances, bins=20, alpha=0.7, color='steelblue', 
-                           edgecolor='black', linewidth=0.8)
-
-# Add reference lines
-ax1.axvline(x=1000, color='red', linestyle='--', linewidth=2, label='$1,000 threshold')
-ax1.axvline(x=10000, color='green', linestyle='--', linewidth=2, label='$10,000 threshold')
-ax1.axvline(x=np.mean(modified_balances), color='orange', linestyle='-', linewidth=2, 
-           label=f'Mean: ${np.mean(modified_balances):,.0f}')
-
-# Customize the plot
-ax1.set_title('Modified Strategy: Distribution of Final Balances', fontsize=14, fontweight='bold')
-ax1.set_xlabel('Final Balance at Age 55 ($)', fontsize=12)
-ax1.set_ylabel('Number of Simulations', fontsize=12)
-ax1.set_xscale('log')
-ax1.legend(loc='upper right')
-ax1.grid(True, alpha=0.3)
-
-# Add statistics text box
-stats_text = f'Mean: ${np.mean(modified_balances):,.0f}\nMedian: ${np.median(modified_balances):,.0f}\nProb > $10k: {np.mean(modified_balances > 10000):.1%}'
-ax1.text(0.02, 0.98, stats_text, transform=ax1.transAxes, fontsize=10,
-         verticalalignment='top', bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
-
-# Plot 2: Box plot with violin plot overlay
-violin_parts = ax2.violinplot([modified_balances], positions=[1], showmeans=True, showmedians=True)
-box_parts = ax2.boxplot([modified_balances], positions=[1], patch_artist=True, widths=0.3)
-
-# Customize violin plot
-for pc in violin_parts['bodies']:
-    pc.set_facecolor('lightblue')
-    pc.set_alpha(0.7)
-
-# Customize box plot
-box_parts['boxes'][0].set_facecolor('lightcoral')
-box_parts['boxes'][0].set_alpha(0.7)
-
-# Add reference lines
-ax2.axhline(y=1000, color='red', linestyle='--', linewidth=2, label='$1,000')
-ax2.axhline(y=10000, color='green', linestyle='--', linewidth=2, label='$10,000')
-
-# Customize the plot
-ax2.set_title('Modified Strategy: Distribution Shape', fontsize=14, fontweight='bold')
-ax2.set_ylabel('Final Balance at Age 55 ($)', fontsize=12)
-ax2.set_yscale('log')
-ax2.set_xticks([1])
-ax2.set_xticklabels(['Modified Strategy'])
-ax2.legend(loc='upper right')
-ax2.grid(True, alpha=0.3)
-
-# Add percentile annotations
-percentiles = [25, 50, 75, 90, 95]
-for p in percentiles:
-    value = np.percentile(modified_balances, p)
-    ax2.annotate(f'{p}th: ${value:,.0f}', 
-                xy=(1, value), xytext=(1.1, value),
-                arrowprops=dict(arrowstyle='->', color='gray', alpha=0.7),
-                fontsize=9, ha='left')
-
-# Adjust layout and display
-plt.tight_layout()
-plt.show()
-
-# Print summary statistics
-print("=== MODIFIED STRATEGY DISTRIBUTION ANALYSIS ===")
-print(f"Mean final balance: ${np.mean(modified_balances):,.2f}")
-print(f"Median final balance: ${np.median(modified_balances):,.2f}")
-print(f"Standard deviation: ${np.std(modified_balances):,.2f}")
-print(f"Minimum: ${np.min(modified_balances):,.2f}")
-print(f"Maximum: ${np.max(modified_balances):,.2f}")
-print(f"Probability > $1,000: {np.mean(modified_balances > 1000):.1%}")
-print(f"Probability > $10,000: {np.mean(modified_balances > 10000):.1%}")
-print(f"Probability > $100,000: {np.mean(modified_balances > 100000):.1%}")
+```{r}
+# Create histogram of modified strategy final balances
+ggplot(modified_simulation_results, aes(x = final_balance)) +
+  geom_histogram(bins = 20, fill = "lightblue", alpha = 0.7, color = "black") +
+  geom_vline(xintercept = initial_balance, color = "red", linetype = "dashed", linewidth = 1) +
+  geom_vline(xintercept = 10000, color = "green", linetype = "dashed", linewidth = 1) +
+  geom_vline(xintercept = modified_mean_final, color = "orange", linetype = "solid", linewidth = 1) +
+  labs(
+    title = "Distribution of Final Balances - Modified Strategy (50% Bet)",
+    subtitle = paste("Age 25 to 55 (30 years) | Mean: $", round(modified_mean_final, 0), 
+                    "| Median: $", round(modified_median_final, 0)),
+    x = "Final Balance at Age 55 ($)",
+    y = "Number of Simulations",
+    caption = "Red line: Initial balance ($1,000) | Green line: $10,000 threshold | Orange line: Mean"
+  ) +
+  scale_x_continuous(
+    labels = scales::dollar_format(),
+    trans = "log10"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  )
 ```
 
-### Visualization: Comparison of Both Strategies
+### Visualization: Strategy Comparison
 
 ```{r}
 # Create comparison data frame
@@ -528,4 +462,5 @@ cat("Modified strategy is", ifelse(modified_prob_above_10k > prob_above_10k, "HI
 
 ### Analysis and Commentary
 
-*The modified strategy (betting 50% of balance each time) shows [higher/lower] probability of reaching $10,000 compared to the original all-in strategy. This is because [explanation based on the actual results]. The risk management of only betting half the balance each time [reduces volatility/increases stability] but also [limits upside potential/affects expected returns].*
+*Based on the 100 simulations for the modified game strategy, there is a 5% chance the account balance will be greater than $10,000. This probability is much lower than the probability than the original game. This is due to the original game being much more volatile due to the all-in strategy. *
+
