@@ -23,7 +23,7 @@ execute:
 
 ### What is the expected value of your account balance after 1 coin flip?
 
-### The expected value after 1 coin flip is $1050. Using the expected value formula, we can calculate the expected value of the account balance after 1 coin flip. The math is as follows: .5*1500 + .5*600 = $1050.
+*The expected value after 1 coin flip is $1050. Using the expected value formula, we can calculate the expected value of the account balance after 1 coin flip. The math is as follows: .5*1500 + .5*600 = $1050.
 
 ```{r}
 # Set up parameters
@@ -291,7 +291,7 @@ print(sample_results)
 
 ### Analysis and Commentary
 
-*I am not happy with the overall results. Across 100 runs, the median balance was $206. Majority of the runs were well below the initial balance of $1000, suggesting a net loss from this game. Although the mean is $1782, this is heavily skewed by a few runs that had an extremely high return. 
+*I am not happy with the overall results. Across 100 runs, the median balance was $206. Majority of the runs were well below the initial balance of $1000, suggesting a net loss from this game is highly probabile. Although the mean is $1782, this is heavily skewed by a few runs that had an extremely high return. Peersonally, I would not play this game as I am pretty risk-averse.
 
 ### Question 5: Probability Analysis-Based on the 100 simulations above, what is the probability the balance will be greater than $1000 at age 55?
 
@@ -462,5 +462,5 @@ cat("Modified strategy is", ifelse(modified_prob_above_10k > prob_above_10k, "HI
 
 ### Analysis and Commentary
 
-*Based on the 100 simulations for the modified game strategy, there is a 5% chance the account balance will be greater than $10,000. This probability is much lower than the probability than the original game. This is due to the original game being much more volatile due to the all-in strategy. *
+*Based on the 100 simulations for the modified game strategy, there is a 5% chance the account balance will be greater than $10,000. This probability is much lower than the probability than the original game. This is because of the original game's all in strategy, leading to a much more volatile and risky end result. Comparing the two column charts of the modified and orginal game strategy, you can immediately see the modified game strategy has a much more balanced distribution of final balances. *
 
