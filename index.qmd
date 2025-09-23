@@ -169,11 +169,133 @@ ggplot(single_simulation, aes(x = age, y = balance)) +
 
 ### Analysis and Commentary
 
-*[I am happy with the final outcome because :*
-- *Are you happy with the final outcome?*
-- *What patterns do you notice in the balance over time?*
-- *How does this compare to your expectations?*
-- *What does this tell you about the investment strategy?*
-- *Any surprises or insights from this single simulation?]*
+*I am happy with the final outcome because there was a 704% return over 30 years. The beginning was very rough as it dropped to $540 in year 3. Although the growth was very volatile, we still came out to a net profit. However, this is understandable as the nature of the investment game was high-risk and high-reward.*
+
+## Question 4: Multiple Simulations - Distribution Analysis
+
+### Run 100 simulations modelling the dynamics of your account balance over time
+
+```{r}
+# Set seed for reproducibility
+set.seed(123)
+
+# Parameters
+initial_balance <- 1000
+n_years <- 30  # Age 25 to 55
+n_sims <- 100
+
+# Function to simulate one complete path (reuse from before)
+simulate_single_path <- function(initial, years) {
+  balance <- initial
+  for (i in 1:years) {
+    coin_flip <- rbinom(1, 1, 0.5)
+    if (coin_flip == 1) {
+      balance <- balance * 1.5  # +50% if heads
+    } else {
+      balance <- balance * 0.6  # -40% if tails
+    }
+  }
+  return(balance)
+}
+
+# Run 100 simulations
+cat("Running 100 simulations...\n")
+final_balances <- replicate(n_sims, simulate_single_path(initial_balance, n_years))
+
+# Create results data frame
+simulation_results <- tibble(
+  simulation = 1:n_sims,
+  final_balance = final_balances
+)
+
+# Calculate key statistics
+mean_final <- mean(final_balances)
+median_final <- median(final_balances)
+min_final <- min(final_balances)
+max_final <- max(final_balances)
+prob_above_1k <- mean(final_balances > 1000)
+prob_above_10k <- mean(final_balances > 10000)
+prob_above_100k <- mean(final_balances > 100000)
+
+cat("=== 100 SIMULATIONS SUMMARY ===\n")
+cat("Mean final balance: $", round(mean_final, 2), "\n")
+cat("Median final balance: $", round(median_final, 2), "\n")
+cat("Minimum final balance: $", round(min_final, 2), "\n")
+cat("Maximum final balance: $", round(max_final, 2), "\n")
+cat("Probability > $1,000: ", round(prob_above_1k, 3), "\n")
+cat("Probability > $10,000: ", round(prob_above_10k, 3), "\n")
+cat("Probability > $100,000: ", round(prob_above_100k, 3), "\n")
+```
+
+### Visualization: Distribution of Final Balances
+
+```{r}
+# Create histogram of final balances
+ggplot(simulation_results, aes(x = final_balance)) +
+  geom_histogram(bins = 20, fill = "steelblue", alpha = 0.7, color = "black") +
+  geom_vline(xintercept = initial_balance, color = "red", linetype = "dashed", linewidth = 1) +
+  geom_vline(xintercept = 10000, color = "green", linetype = "dashed", linewidth = 1) +
+  geom_vline(xintercept = mean_final, color = "orange", linetype = "solid", linewidth = 1) +
+  labs(
+    title = "Distribution of Final Balances - 100 Simulations",
+    subtitle = paste("Age 25 to 55 (30 years) | Mean: $", round(mean_final, 0), 
+                    "| Median: $", round(median_final, 0)),
+    x = "Final Balance at Age 55 ($)",
+    y = "Number of Simulations",
+    caption = "Red line: Initial balance ($1,000) | Green line: $10,000 threshold | Orange line: Mean"
+  ) +
+  scale_x_continuous(
+    labels = scales::dollar_format(),
+    trans = "log10"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray50"),
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 12)
+  )
+```
+
+### Detailed Statistics
+
+```{r}
+# Create summary statistics table
+summary_stats <- simulation_results %>%
+  summarise(
+    count = n(),
+    mean_balance = mean(final_balance),
+    median_balance = median(final_balance),
+    std_dev = sd(final_balance),
+    min_balance = min(final_balance),
+    max_balance = max(final_balance),
+    q25 = quantile(final_balance, 0.25),
+    q75 = quantile(final_balance, 0.75),
+    prob_above_1k = mean(final_balance > 1000),
+    prob_above_10k = mean(final_balance > 10000),
+    prob_above_100k = mean(final_balance > 100000),
+    prob_below_1k = mean(final_balance < 1000)
+  )
+
+cat("=== DETAILED STATISTICS ===\n")
+print(summary_stats)
+
+# Show some individual results
+cat("\n=== SAMPLE OF INDIVIDUAL RESULTS ===\n")
+sample_results <- simulation_results %>%
+  arrange(desc(final_balance)) %>%
+  slice_head(n = 10)
+
+print(sample_results)
+```
+
+### Analysis and Commentary
+
+*I am not happy with the overall results. Across 100 runs, the median balance was $206. Majority of the runs were well below the initial balance of $1000, suggesting a net loss from this game. Although the mean is $1782, this is heavily skewed by a few runs that had an extremely high return. 
+
+### Question 5: Probability Analysis: Based on the 100 simulations above, what is the probability the balance will be greater than $1000 at age 55?
+
+*The probability of the balance being greater than $1000 at age 55 is around 28%. From the 100 simulations, the majority of them fell below the initial balance of $1000.*
+
 
 
