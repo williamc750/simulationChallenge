@@ -23,7 +23,7 @@ execute:
 
 ### What is the expected value of your account balance after 1 coin flip?
 
-The expected value after 1 coin flip is $1050. Using the expected value formula, we can calculate the expected value of the account balance after 1 coin flip. The math is as follows: .5*1500 + .5*600 = $1050.
+The expected value after 1 coin flip is $1050. Using the expected value formula, we can calculate the expected value of the account balance after 1 coin flip. The math is as follows: (.5x1500) + (.5x600) = $1050.
 
 ```{r}
 # Set up parameters
